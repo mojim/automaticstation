@@ -1,201 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-  <meta charset="UTF-8" />
-  <title>متابعة حالة الطلب</title>
-  <link rel="stylesheet" href="/css/style.css" />
-</head>
-<body>
-<header>
-  <div class="logo">
-    <a href="/index.html"><img  src="/images/station2-01.svg" alt=" المحطة الاوتوماتيكية" /></a>
-  </div>
-  <div class="menu-toggle" id="menuToggle">☰</div>
-  <nav>
-    <ul id="navList">
-      <li><a href="/index.html">الرئيسية</a></li>
-      <li><a href="/service.html">الخدمات</a></li>
-      <li><a href="/order.html">احجز الآن</a></li>
-      <li><a href="/folwordr.html">متابعة حالة الطلب</a></li>
-      <li><a href="#">التقييمات</a></li>
-      <li><a href="https://wa.me/9647832460670?text=مرحبا،%20أرغب%20بمعرفة%20تفاصيل%20الخدمات" target="_blank" class="action-button whatsapp">تواصل معنا</a></li>
-    </ul>
-  </nav>
-</header>
-
-
-<div class="tracking-container">
-  <h2>🔍 متابعة حالة الطلب</h2>
-  <input type="tel" id="phoneNumberInput" placeholder="أدخل رقم الهاتف" />
-  <button onclick="trackOrder()">متابعة</button>
-
-  <div id="trackingStatus" class="tracking-status hidden">
-    <ul class="progressbar" id="progressSteps">
-      <li class="step done">تم الاستلام</li>
-      <li class="step">جاري الغسل</li>
-      <li class="step">التجفيف</li>
-      <li class="step">التجهيز</li>
-      <li class="step">التوصيل</li>
-    </ul>
-  </div>
-
-  <div id="deliveryFeedback" class="hidden" style="margin-top:20px;">
-    <p>✅ لقد تم توصيل طلبك بنجاح، الرجاء تقييم تجربتك معنا (نتمنى أن تكون راضٍ عنا):</p>
-
-    <label>التقييم (اختر من 1 إلى 5):</label><br />
-    <div id="ratingButtons">
-      <button type="button" onclick="setRating(1)">1</button>
-      <button type="button" onclick="setRating(2)">2</button>
-      <button type="button" onclick="setRating(3)">3</button>
-      <button type="button" onclick="setRating(4)">4</button>
-      <button type="button" onclick="setRating(5)">5</button>
-    </div>
-
-    <input type="hidden" id="rating" name="rating" />
-
-    <label for="issue">إذا لديك مشكلة في طلبك، يرجى كتابتها هنا:</label><br />
-    <textarea
-      id="issue"
-      name="issue"
-      rows="4"
-      cols="40"
-      placeholder="اكتب مشكلتك هنا (اختياري)"
-    ></textarea>
-    <br /><br />
-
-    <button onclick="sendFeedback()">إرسال التقييم والمشكلة</button>
-  </div>
-</div>
-
-<script>
-  let selectedRating = 0;
-
-function trackOrder() {
-  const phone = document.getElementById("phoneNumberInput").value.trim();
-  if (!phone) {
-    alert("يرجى إدخال رقم الهاتف للمتابعة.");
-    return;
-  }
-
-  globalPhone = phone; // نحفظه هنا
-
-  fetch(`https://script.google.com/macros/s/AKfycbzIppstvyhiHMw6_C0APM7SS6BLQ4_DbEdc2Zj6PehXsYkZ6japKXPLJRtlxXdbBvN5dQ/exec?phone=${encodeURIComponent(phone)}`)
-    .then(res => res.json())
-    .then(data => {
-      if (!data.status) {
-        alert("🚫 لم يتم العثور على طلب مرتبط بهذا الرقم.");
-        return;
-      }
-
-      document.getElementById("trackingStatus").classList.remove("hidden");
-
-      const statusSteps = document.querySelectorAll(".step");
-      statusSteps.forEach(step => step.classList.remove("done"));
-
-      const statusMap = {
-        "تم الاستلام": 1,
-        "جاري الغسل": 2,
-        "التجفيف": 3,
-        "التجهيز": 4,
-        "التوصيل": 5,
-      };
-
-      const currentStep = statusMap[data.status] || 0;
-      for (let i = 0; i < currentStep; i++) {
-        statusSteps[i].classList.add("done");
-      }
-
-      const feedbackDiv = document.getElementById("deliveryFeedback");
-      if (data.status === "التوصيل") {
-        feedbackDiv.classList.remove("hidden");
-      } else {
-        feedbackDiv.classList.add("hidden");
-        resetRating();
-      }
-    })
-    .catch(error => {
-      console.error("❌ خطأ:", error);
-      alert("حدث خطأ أثناء تحميل حالة الطلب.");
-    });
-}
-
-
-  function setRating(value) {
-    selectedRating = value;
-    document.getElementById("rating").value = value;
-
-    const buttons = document.querySelectorAll("#ratingButtons button");
-    buttons.forEach((btn, index) => {
-      if (index === value - 1) {
-        btn.classList.add("selected");
-      } else {
-        btn.classList.remove("selected");
-      }
-    });
-  }
-
-  function resetRating() {
-    selectedRating = 0;
-    document.getElementById("rating").value = "";
-    const buttons = document.querySelectorAll("#ratingButtons button");
-    buttons.forEach(btn => btn.classList.remove("selected"));
-    document.getElementById("issue").value = "";
-  }
-
-function sendFeedback() {
-  const phone = document.getElementById("phoneNumberInput").value.trim();
-  const rating = selectedRating;
-  const issue = document.getElementById("issue").value.trim();
-
-  if (!phone) {
-    alert("يرجى إدخال رقم الهاتف أولاً.");
-    return;
-  }
-  if (!rating || rating < 1 || rating > 5) {
-    alert("يرجى اختيار تقييم من 1 إلى 5.");
-    return;
-  }
-
-  const data = {
-    phone,
-    rating,
-    issue
-  };
-
-  fetch("https://script.google.com/macros/s/AKfycbwLgHs_5wpVTtqBPP_0ADy7p_gx45hAwNcLQjm_Z62wWwx4zhakbYTWaEGAfqdp5t_u2Q/exec", {
-  method: "POST",
-  mode: "no-cors", // ← تسمح بتجاوز CORS لكن بدون رد
-  headers: {
-    "Content-Type": "application/json",
-  },
-  body: JSON.stringify(data),
-})
-.then(() => {
-  alert("✅ تم إرسال التقييم .");
-  resetRating();
-})
-.catch(err => {
-  console.error("❌ خطأ في إرسال التقييم:", err);
-  alert("❌ حدث خطأ أثناء الإرسال. يرجى المحاولة لاحقاً.");
-});
-
-  
-}
-
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtn = document.getElementById('menuToggle');
-    const navList = document.getElementById('navList');
-
-    toggleBtn.addEventListener('click', () => {
-      navList.classList.toggle('show');
-    });
-  });
-</script>
-
-
-</body>
-</html>
