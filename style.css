@@ -21,7 +21,7 @@
 body {
   margin: 0;
   padding: 0;
-  background: var(--background-light) url(/images/carpets.jpg) no-repeat center center fixed;
+  background: var(--background-light) url(carpets.jpg) no-repeat center center fixed;
   background-size: cover;
   
 }
@@ -758,3 +758,4 @@ html, body {
     display: flex;
   }
 }
+
