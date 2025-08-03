@@ -1,294 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>احجز الآن - غسيل السجاد</title>
-  <link rel="stylesheet" href="/css/style.css">
-  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css" />
-<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"></script>
-
-</head>
-
-<body>
-
-<header>
- <div class="logo">
-    <a href="/index.html"><img  src="/images/station2-01.svg" alt=" المحطة الاوتوماتيكية" /></a>
-  </div>
-  <div class="menu-toggle" id="menuToggle">☰</div>
-  <nav>
-    <ul id="navList">
-      <li><a href="/index.html">الرئيسية</a></li>
-      <li><a href="/service.html">الخدمات</a></li>
-      <li><a href="/order.html">احجز الآن</a></li>
-      <li><a href="/folwordr.html">متابعة حالة الطلب</a></li>
-      <li><a href="#">التقييمات</a></li>
-      <li><a href="https://wa.me/9647832460670?text=مرحبا،%20أرغب%20بمعرفة%20تفاصيل%20الخدمات" target="_blank" class="action-button whatsapp">تواصل معنا</a></li>
-    </ul>
-  </nav>
-</header>
-
-
- <main class="booking-container">
-  <h1>احجز الآن</h1>
-
-  <!-- رقم الحجز يظهر هنا -->
-<!-- <div id="orderNumberDisplay" style="font-size: 1.1rem; font-weight: bold; color: green; margin-bottom: 15px;">
-  رقم الحجز الخاص بك: جاري التحميل...
-</div> -->
-
-<form id="bookingForm" class="booking-form">
-  <!-- <label for="orderNumber">رقم الحجز:</label>
-<input type="text" id="orderNumber" name="orderNumber" readonly style="background-color:#eee; font-weight:bold;"> -->
-  <label for="name">الاسم الكامل:</label>
-  <input type="text" id="name" name="name" required>
-
-  <label for="phone">رقم الهاتف:</label>
-  <input type="tel" id="phone" name="phone" required>
-
-<!-- زر تحديد الموقع -->
-<!-- <button type="button" onclick="getLocation()" style="margin-top: 5px;" id="locateBtn">📍 تحديد موقعي</button> -->
-
-<!-- إحداثيات -->
- <label for="" style="color: #d80a0a;">من فضلك ممر الخريطة على موقع منزلك ثم قم بالنقر عليه </label>
-<div id="coords" style="margin: 0 0; font-size: 0.9rem; color: green;"></div>
-
-<!-- خريطة -->
-<div id="map" style="height: 300px; margin-bottom: 10px;"></div>
-<label for="address">العنوان الكامل: (بعد تحديد موقعك يمكنك اضافة وصف لعنوانك مثل دلالة فرعية او لون الباب...الخ)</label>
-<textarea class="txt-full-width" id="address" name="address" rows="2" required></textarea>
-
-
-  <label for="carpetMainType">نوع السجاد:</label>
-  <select id="carpetMainType" name="carpetMainType" required>
-    <option value="">اختر نوع السجاد</option>
-    <option value="عادي">عادي</option>
-    <option value="ثري دي">ثري دي</option>
-    <option value="كاربت">كاربت</option>
-  </select>
-
-  <select id="carpetWeightType" name="carpetWeightType" required>
-    <option value="">اختر النوع</option>
-    <option value="خفيف">خفيف</option>
-    <option value="وسط">وسط</option>
-    <option value="ثقيل">ثقيل</option>
-  </select>
-
-  <label for="size">المساحة بالمتر المربع:</label>
-  <small style="display: block; color: #666; font-size: 0.85rem; margin-bottom: 5px;">
-    يرجى كتابة مجموع الأمتار (كل قطعة تضرب الطول × العرض) وتكتب مجموع الأمتار.<br>
-    نحن نقوم بقياس السجاد بعد عملية الغسيل وقد يصبح المبلغ أقل أو أكثر حسب القياس الفعلي.
-  </small>
-  <input type="number" id="size" name="size" placeholder="مثال: 12" required>
-
-  <label for="estimatedPrice">السعر التقريبي (د.ع):</label>
-  <input type="text" id="estimatedPrice" name="estimatedPrice" readonly placeholder="سيظهر السعر هنا">
-
-  <label for="date">تاريخ الاستلام:</label>
-  <input type="date" id="date" name="date" required>
-
-  <label for="time">الوقت المفضل:</label>
-  <input type="time" id="time" name="time" required>
-
-  <button type="button" class="submit-btn" onclick="sendBookingToGoogleSheet()">إرسال الحجز</button>
-</form>
-
-<!-- سكربت جلب رقم الحجز + إرسال البيانات -->
-<script>
-let currentOrderNumber = ""; // رقم الحجز الحالي
-
-// تحميل رقم الحجز من Google Apps Script
-function loadOrderNumber() {
-  fetch("https://script.google.com/macros/s/AKfycbzIppstvyhiHMw6_C0APM7SS6BLQ4_DbEdc2Zj6PehXsYkZ6japKXPLJRtlxXdbBvN5dQ/exec")
-    .then(res => res.json())
-    .then(data => {
-      currentOrderNumber = data.nextOrderNumber || "ORD-1001";
-      document.getElementById("orderNumber").value = currentOrderNumber;
-    })
-    .catch(err => {
-      console.error("فشل في جلب رقم الحجز:", err);
-      document.getElementById("orderNumber").value = "خطأ";
-    });
-}
-
-window.onload = loadOrderNumber;
-
-function sendBookingToGoogleSheet() {
-  const name = document.getElementById("name").value.trim();
-  const phone = document.getElementById("phone").value.trim();
-  const address = document.getElementById("address").value.trim();
-  const carpetMainType = document.getElementById("carpetMainType").value;
-  const carpetWeightType = document.getElementById("carpetWeightType").value;
-  const size = document.getElementById("size").value.trim();
-  const estimatedPrice = document.getElementById("estimatedPrice").value;
-  const date = document.getElementById("date").value;
-  const time = document.getElementById("time").value;
-
-  if (!name || !phone || !address || !carpetMainType || !carpetWeightType || !size || !date || !time) {
-    alert("يرجى ملء جميع الحقول قبل الإرسال.");
-    return;
-  }
-
-  const data = {
-    name,
-    phone,
-    address,
-    carpetMainType,
-    carpetWeightType,
-    size,
-    estimatedPrice,
-    date,
-    time
-  };
-
-  fetch("https://script.google.com/macros/s/AKfycbzIppstvyhiHMw6_C0APM7SS6BLQ4_DbEdc2Zj6PehXsYkZ6japKXPLJRtlxXdbBvN5dQ/exec", {
-    method: "POST",
-    mode: "no-cors",
-    headers: {
-      "Content-Type": "application/json",
-    },
-    body: JSON.stringify(data)
-  })
-  .then(() => {
-    alert(`✅ تم إرسال الحجز بنجاح!\nسيتم التواصل معك عبر واتساب.`);
-    openWhatsAppChat({ ...data, orderNumber: currentOrderNumber });
-    document.getElementById("bookingForm").reset(); // تفريغ الحقول
-    loadOrderNumber(); // تحديث رقم الحجز التالي
-  })
-  .catch((error) => {
-    alert("❌ حدث خطأ أثناء إرسال الحجز. حاول مرة أخرى.");
-    console.error(error);
-  });
-}
-
-function openWhatsAppChat(data) {
-  const message =
-    `🧼 حجز جديد لخدمة غسيل السجاد:\n\n` +
-    // `🔢 رقم الحجز: ${data.orderNumber}\n` +
-    `👤 الاسم: ${data.name}\n` +
-    `📞 الهاتف: ${data.phone}\n` +
-    `📍 العنوان: ${data.address}\n` +
-    `🧺 نوع السجاد: ${data.carpetMainType} - ${data.carpetWeightType}\n` +
-    `📐 المساحة: ${data.size} متر مربع\n` +
-    `💰 السعر التقريبي: ${data.estimatedPrice}\n` +
-    `📅 التاريخ: ${data.date}\n` +
-    `⏰ الوقت: ${data.time}`;
-
-  const encodedMsg = encodeURIComponent(message);
-  const whatsappLink = `https://wa.me/9647832460670?text=${encodedMsg}`;
-  window.open(whatsappLink, "_blank");
-}
-</script>
-
-
-
-
-
-
-
-
-
-  <!-- سكربت الموقع على الخريطة -->
-  <script>
-  // إحداثيات ابتدائية (نجف مثلاً)
-  const initialLat = 32.0003;
-  const initialLng = 44.3592;
-
-  const map = L.map('map').setView([initialLat, initialLng], 14);
-
-  // خريطة مفتوحة المصدر مجانية
-  L.tileLayer('https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png', {
-    attribution: '© OpenStreetMap contributors'
-  }).addTo(map);
-
-  // ماركر لتحديد النقطة
-  let marker = L.marker([initialLat, initialLng], { draggable: true }).addTo(map);
-
-  // أول ما يتحرك الماركر أو المستخدم يضغط على الخريطة
-  function updateAddress(lat, lng) {
-    const locationLink = `https://www.google.com/maps?q=${lat},${lng}`;
-    document.getElementById('address').value = `📍 موقعي: ${locationLink}`;
-  }
-
-  // الضغط على الخريطة
-  map.on('click', function(e) {
-    const { lat, lng } = e.latlng;
-    marker.setLatLng([lat, lng]);
-    updateAddress(lat, lng);
-  });
-
-  // سحب الماركر
-  marker.on('dragend', function(e) {
-    const { lat, lng } = e.target.getLatLng();
-    updateAddress(lat, lng);
-  });
-
-  // ملاحظة: ممكن هنا تضيف زر "تحديد موقعي" يعتمد على GPS إن تحب
-</script>
-
-  <!--   سكربت القياس  -->
-
-<script>
-  const carpetType = document.getElementById("carpetWeightType");
-  const sizeInput = document.getElementById("size");
-  const priceField = document.getElementById("estimatedPrice");
-
-  // نضيف عنصر الملاحظة بشكل ديناميكي
-  const note = document.createElement("p");
-  note.style.color = "red";
-  note.style.marginTop = "5px";
-  note.style.fontSize = "0.9rem";
-  sizeInput.parentNode.insertBefore(note, priceField.nextSibling);
-
-  function calculatePrice() {
-    const type = carpetType.value;
-    const size = parseFloat(sizeInput.value);
-
-    if (!type || isNaN(size) || size <= 0) {
-      priceField.value = "";
-      note.textContent = "";
-      return;
-    }
-
-    let pricePerMeter = 0;
-
-    if (type === "خفيف") {
-      pricePerMeter = 1500;
-    } else if (type === "وسط" || type === "ثقيل") {
-      pricePerMeter = 2000;
-    }
-
-    let estimated = size * pricePerMeter;
-
-    if (estimated < 25000) {
-      estimated = 30000;
-      note.textContent = "الحد الأدنى للطلبات هو 30,000 د.ع";
-    } else {
-      note.textContent = "";
-    }
-
-    priceField.value = estimated.toLocaleString() + " د.ع";
-  }
-
-  carpetType.addEventListener("change", calculatePrice);
-  sizeInput.addEventListener("input", calculatePrice);
-</script>
-
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtn = document.getElementById('menuToggle');
-    const navList = document.getElementById('navList');
-
-    toggleBtn.addEventListener('click', () => {
-      navList.classList.toggle('show');
-    });
-  });
-</script>
-
-
-
-
-</body>
-</html>
