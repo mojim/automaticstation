@@ -197,7 +197,7 @@ header {
 ----------------------------- */
 .hero {
   background: linear-gradient(rgba(0,0,0,0.6), rgba(0,0,0,0.6)), 
-              url('https://images.unsplash.com/photo-1581579203134-980e57bbbf05?auto=format&fit=crop&w=1600&q=80');
+              url('carpets.jpg');
   background-size: cover;
   background-position: center;
   color: var(--text-light);
@@ -758,4 +758,5 @@ html, body {
     display: flex;
   }
 }
+
 
