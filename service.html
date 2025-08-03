@@ -1,132 +1,0 @@
-<!DOCTYPE html>
-<html lang="ar" dir="rtl">
-<head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>المحطة الاوتوماتيكية - الخدمات</title>
-  <link rel="stylesheet" href="/css/style.css">
-</head>
-<body>
-
-   <header>
-  <div class="logo">
-    <a href="/index.html"><img  src="/images/station2-01.svg" alt=" المحطة الاوتوماتيكية" /></a>
-  </div>
-  <div class="menu-toggle" id="menuToggle">☰</div>
-  <nav>
-    <ul id="navList">
-      <li><a href="/index.html">الرئيسية</a></li>
-      <li><a href="/service.html">الخدمات</a></li>
-      <li><a href="/order.html">احجز الآن</a></li>
-      <li><a href="/folwordr.html">متابعة حالة الطلب</a></li>
-      <li><a href="#">التقييمات</a></li>
-      <li><a href="https://wa.me/9647832460670?text=مرحبا،%20أرغب%20بمعرفة%20تفاصيل%20الخدمات" target="_blank" class="action-button whatsapp">تواصل معنا</a></li>
-    </ul>
-  </nav>
-</header>
-<main>
-<section class="features animated-features">
-  <div class="bubbles-background">
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-    <span class="bubble"></span>
-  </div>
-
-  <div class="feature-box">
-    <h3>غسيل احترافي</h3>
-    <p>نستخدم أفضل المواد والأجهزة الحديثة.</p>
-  </div>
-  <div class="feature-box">
-    <h3>توصيل مجاني</h3>
-    <p>نستلم ونوصل السجاد لباب بيتك.</p>
-  </div>
-  <div class="feature-box">
-    <h3>نتائج مضمونة</h3>
-    <p>رضاك هو أولويتنا.</p>
-  </div>
-</section>
-<div class="action-buttons">
-  <a href="/order.html" class="action-button primary">📝 احجز الآن</a>
-  <a href="https://wa.me/9647832460670?text=مرحبا،%20أرغب%20بمعرفة%20تفاصيل%20الخدمات" target="_blank" class="action-button whatsapp">📞 تواصل معنا عبر واتساب</a>
-</div>
-
-</main>
-
- 
-
-
-<script>
-    const bubbles = document.querySelectorAll('.bubbles-background .bubble');
-
-window.addEventListener('mousemove', (e) => {
-  const x = e.clientX / window.innerWidth; // 0 إلى 1
-  const y = e.clientY / window.innerHeight;
-
-  bubbles.forEach((bubble, i) => {
-    // نحدد حركة خفيفة للفقاعات حسب موقع الماوس مع اختلاف القوة حسب حجم الفقاعة (أو ترتيبها)
-    const moveX = (x - 0.5) * 20 * ((i % 3) + 1); // حركة يمين ويسار
-    const moveY = (y - 0.5) * 15 * ((i % 2) + 1); // حركة فوق وتحت
-
-    bubble.style.transform = `translate(calc(var(--rise-x, 0px) + ${moveX}px), calc(var(--rise-y, 0px) + ${-Math.abs(moveY)}px))`;
-  });
-});
-
-// لجعل الفقاعات تتحرك تلقائياً للأعلى كما بالأنيميشن
-bubbles.forEach((bubble, i) => {
-  // نخزن تحريك الصعود ضمن متغيرات CSS Custom
-  const duration = parseFloat(getComputedStyle(bubble).animationDuration) || 12;
-  const delay = parseFloat(getComputedStyle(bubble).animationDelay) || 0;
-
-  let startTime = performance.now() + delay * 1000;
-
-  function animateRise(time) {
-    const elapsed = (time - startTime) / 1000;
-    const progress = (elapsed % duration) / duration; // 0..1
-
-    // تحريك صعودي ثابت مع تذبذب أفقى خفيف
-    const riseX = 10 * Math.sin(progress * 2 * Math.PI);
-    const riseY = -300 * progress;
-
-    bubble.style.setProperty('--rise-x', `${riseX}px`);
-    bubble.style.setProperty('--rise-y', `${riseY}px`);
-
-    requestAnimationFrame(animateRise);
-  }
-  requestAnimationFrame(animateRise);
-});
-
-// تأثير عند النقر يضيف حركة صغيرة مؤقتة
-window.addEventListener('click', (e) => {
-  bubbles.forEach((bubble, i) => {
-    bubble.style.transition = 'transform 0.3s ease-out';
-    bubble.style.transform += ` translate(${(Math.random() - 0.5) * 30}px, ${(Math.random() - 0.5) * 30}px)`;
-    setTimeout(() => {
-      bubble.style.transition = '';
-    }, 300);
-  });
-});
-
-</script>
-
-<script>
-  document.addEventListener("DOMContentLoaded", function() {
-    const toggleBtn = document.getElementById('menuToggle');
-    const navList = document.getElementById('navList');
-
-    toggleBtn.addEventListener('click', () => {
-      navList.classList.toggle('show');
-    });
-  });
-</script>
- <footer>
-    <p>© 2025 - جميع الحقوق محفوظة لمشروع المحطة الاوتوماتيكية</p>
-  </footer>
-</body>
-</html>
